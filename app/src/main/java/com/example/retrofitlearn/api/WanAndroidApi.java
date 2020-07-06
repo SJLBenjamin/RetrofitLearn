@@ -18,6 +18,8 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -47,8 +49,9 @@ public interface  WanAndroidApi{
         Call<WXListBean> getProjectForK(@Path("id") String id, @Path("page") String page,@Query("k") String k);
 
         //登录
+        @Headers("Cookie:XXX")
         @POST("user/login")
-        Call<UserBean> CreateUser(@Body UserBean user);
+        Call<ResponseBody> CreateUser(@Body UserBean user);
 
         //注册,表单注册
         @FormUrlEncoded
@@ -87,10 +90,10 @@ public interface  WanAndroidApi{
         @POST("project/xxx")
         Call<ResponseBody> upLoadTextAndFile(@Part("username") RequestBody userName,@Part("password") RequestBody password,@Part MultipartBody.Part file);
 
-        //以流的形式去
+        //以流的形式去请求文件
         @Streaming
         @GET
-        Call<ProjectBean> downloadFile(@Url String fileUrl);
+        Call<ResponseBody> downloadFile(@Url String fileUrl);
 
 
 

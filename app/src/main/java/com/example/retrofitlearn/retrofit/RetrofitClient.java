@@ -5,7 +5,11 @@ package com.example.retrofitlearn.retrofit;
 
 import com.example.retrofitlearn.api.WanAndroidApi;
 
+import java.util.List;
+
+import okhttp3.Cookie;
 import okhttp3.CookieJar;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -40,6 +44,19 @@ public class RetrofitClient {
     * */
     public WanAndroidApi createWanAndroidLoginApi(){
 
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        CookieJar cookieJar = new CookieJar() {
+            @Override
+            public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+
+            }
+
+            @Override
+            public List<Cookie> loadForRequest(HttpUrl url) {
+                return null;
+            }
+        };
+        builder.cookieJar();
         return new Retrofit.Builder().baseUrl(WanAndroidLoginApiURL)
                 .addConverterFactory(GsonConverterFactory.create())//将数据转换为Bean类的工具
                 .build().create(WanAndroidApi.class);
@@ -58,7 +75,7 @@ public class RetrofitClient {
     public WanAndroidApi createWanAndroidUploadApi(){
         return new Retrofit.Builder().baseUrl(WanAndroidRegisterApiURL)
                 .addConverterFactory(GsonConverterFactory.create())//将数据转换为Bean类的工具
-                .build().create(WanAndroidApi.class);
+               .build().create(WanAndroidApi.class);
     };
 
     //接口封装
@@ -71,5 +88,14 @@ public class RetrofitClient {
     public <T>  T createWanAndroidUploadApi(Class<T> service){
         return mRetrofit.create(service);
     };
+
+
+    //下载图片
+    public WanAndroidApi downloadApi(){
+        return new Retrofit.Builder().baseUrl("https://timgsa.baidu.com/")
+                .addConverterFactory(GsonConverterFactory.create())//将数据转换为Bean类的工具
+                .build().create(WanAndroidApi.class);
+    };
+
 
 }

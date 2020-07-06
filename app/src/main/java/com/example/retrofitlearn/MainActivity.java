@@ -2,23 +2,28 @@ package com.example.retrofitlearn;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.renderscript.RenderScript;
+
 import android.util.Log;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
+
+import android.widget.ImageView;
 
 
 import com.example.retrofitlearn.api.WanAndroidApi;
+
 import com.example.retrofitlearn.bean.RegisterBean;
 import com.example.retrofitlearn.bean.UserBean;
 import com.example.retrofitlearn.bean.WXListBean;
 import com.example.retrofitlearn.retrofit.RetrofitClient;
+
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 
 import java.io.File;
-import java.io.IOException;
+
 import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     MainActivity mContext =this;
     String TAG = "MainActivity";
     private RxPermissions rxPermissions;
-
+    private ImageView ivShow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+
+        ivShow = (ImageView) findViewById(R.id.iv_show);
 
         final CookieManager cookieManager = CookieManager.getInstance();
         boolean b = cookieManager.acceptCookie();
@@ -130,10 +138,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         com.example.retrofitlearn.api.WanAndroidApi wanAndroidLoginApi = new RetrofitClient().createWanAndroidLoginApi();
-        Call<UserBean> userBeanCall = wanAndroidLoginApi.CreateUser(new UserBean("宋炯乐", "123456"));
-        userBeanCall.enqueue(new Callback<UserBean>() {
+        Call<ResponseBody> userBeanCall = wanAndroidLoginApi.CreateUser(new UserBean("宋炯乐", "123456"));
+        userBeanCall.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<UserBean> call, Response<UserBean> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
                 Log.d(TAG,"登录结果=="+response.body()+"    消息==="+response.message());
                 String cookie1 = cookieManager.getCookie("https://www.wanandroid.com/user/login");
 
@@ -148,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<UserBean> call, Throwable t) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.d(TAG,"登录错误原因=="+t.getMessage());
             }
         });
@@ -162,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
         registerBeanCall.enqueue(new Callback<RegisterBean>() {
             @Override
             public void onResponse(Call<RegisterBean> call, Response<RegisterBean> response) {
-                Log.d(TAG,"注册结果=="+response.body()+"    消息==="+response.message());
+                Log.d(TAG,"注册结果=="+response.body()+"    消息==="+response.message()+" 注册code=="+response.code());
             }
 
             @Override
@@ -289,6 +298,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        com.example.retrofitlearn.api.WanAndroidApi wanAndroidApi = new RetrofitClient().downloadApi();
+       // https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1594029486086&di=3d9d5d1db0eca30711cae171a6e9042c&imgtype=0&src=http%3A%2F%2Ft8.baidu.com%2Fit%2Fu%3D3571592872%2C3353494284%26fm%3D79%26app%3D86%26f%3DJPEG%3Fw%3D1200%26h%3D1290
+        Call<ResponseBody> projectBeanCall = wanAndroidApi.downloadFile( "timg?image&quality=80&size=b9999_10000&sec=1594029486086&di=3d9d5d1db0eca30711cae171a6e9042c&imgtype=0&src=http%3A%2F%2Ft8.baidu.com%2Fit%2Fu%3D3571592872%2C3353494284%26fm%3D79%26app%3D86%26f%3DJPEG%3Fw%3D1200%26h%3D1290"
+);
+        projectBeanCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.isSuccessful()){
+                    Log.d(TAG,"开始获取流了");
+
+                  final   Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ivShow.setImageBitmap(bitmap);
+                        }
+                    });
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d(TAG,"获取流失败原因=="+t.getMessage());
+            }
+        });
 
     }
 }
