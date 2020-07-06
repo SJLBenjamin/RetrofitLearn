@@ -247,16 +247,15 @@ public class MainActivity extends AppCompatActivity {
         //设置文件类型和File对象
         RequestBody requestBody1 =  RequestBody.create(MediaType.parse("image/png"),file1);
         MultipartBody.Part partAll = MultipartBody.Part.createFormData("file", file1.getName(), requestBody1);
-
+        List<MultipartBody.Part>  partList = new ArrayList<MultipartBody.Part>();
         Map<String,RequestBody> mapAll = new HashMap<String,RequestBody>();
         for (int i=0;i<10;i++){
             mapAll.put(i+"",requestBody1);
+            partList.add(partAll);
         }
-        if(true){
-            return;
-        }
+
        // @PartMap values cannot be MultipartBody.Part. Use @Part List<Part> or a different value type instead. (parameter #1),此处报错
-        Call<ResponseBody> upLoadAll1 = wanAndroidLoginApi.upLoadAll1(mapAll, new ArrayList<MultipartBody.Part>());
+        Call<ResponseBody> upLoadAll1 = wanAndroidLoginApi.upLoadAll1(mapAll, partList);
 
         upLoadAll1.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -269,6 +268,27 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG,"1上传所有错误原因=="+t.getMessage());
             }
         });
+
+        //图文混传
+        File file2 = new File("");
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody nameRequestBody = RequestBody.create(mediaType,"sjl");
+        RequestBody passwordRequestBody = RequestBody.create(mediaType,"123456");
+        RequestBody fileRequestBody = RequestBody.create(MediaType.parse("image/png"), file2);
+        MultipartBody.Part fileAndtextPart = MultipartBody.Part.createFormData("file", file2.getName(), fileRequestBody);
+        Call<ResponseBody> upLoadTextAndFile = wanAndroidLoginApi.upLoadTextAndFile(nameRequestBody, passwordRequestBody, fileAndtextPart);
+        upLoadTextAndFile.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.d(TAG,"上传所有图片和文字结果=="+response.body()+"    消息==="+response.message());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d(TAG,"上传所有图片和文字错误原因=="+t.getMessage());
+            }
+        });
+
 
     }
 }

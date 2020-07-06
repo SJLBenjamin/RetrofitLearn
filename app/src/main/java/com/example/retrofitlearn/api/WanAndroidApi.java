@@ -1,6 +1,7 @@
 package com.example.retrofitlearn.api;
 
 
+import com.example.retrofitlearn.bean.ProjectBean;
 import com.example.retrofitlearn.bean.RegisterBean;
 import com.example.retrofitlearn.bean.UserBean;
 import com.example.retrofitlearn.bean.WXListBean;
@@ -23,6 +24,8 @@ import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Streaming;
+import retrofit2.http.Url;
 
 
 /*
@@ -74,9 +77,22 @@ public interface  WanAndroidApi{
         Call<ResponseBody> upLoadAll(@PartMap Map<String,RequestBody> partMap);
 
 
-        //上传多个图片第二种写法
+        //上传多个图片第二种写法,Multipart代表表单,MultipartBody.Part设置表单相关内容
         @Multipart
         @POST("project/upload")
         Call<ResponseBody>  upLoadAll1(@PartMap Map<String,RequestBody> partMap,@Part List<MultipartBody.Part>  mList);
+
+        //图文混传
+        @Multipart
+        @POST("project/xxx")
+        Call<ResponseBody> upLoadTextAndFile(@Part("username") RequestBody userName,@Part("password") RequestBody password,@Part MultipartBody.Part file);
+
+        //以流的形式去
+        @Streaming
+        @GET
+        Call<ProjectBean> downloadFile(@Url String fileUrl);
+
+
+
 
 }
