@@ -137,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        com.example.retrofitlearn.api.WanAndroidApi wanAndroidLoginApi = new RetrofitClient().createWanAndroidLoginApi();
-        Call<ResponseBody> userBeanCall = wanAndroidLoginApi.CreateUser(new UserBean("宋炯乐", "123456"));
+        com.example.retrofitlearn.api.WanAndroidApi wanAndroidLoginApi1 = new RetrofitClient().createWanAndroidLoginApi();
+        Call<ResponseBody> userBeanCall = wanAndroidLoginApi1.CreateUser(new UserBean("宋炯乐", "123456"));
         userBeanCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
 
         /*上传单个图片2*/
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
-        Call<ResponseBody> responseBodyCall1 = wanAndroidLoginApi.upLoad2(part);
+        Call<ResponseBody> responseBodyCall1 = wanAndroidRegisterApi.upLoad2(part);
         responseBodyCall1.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
             //此处设置part
             map.put("file\";filename=\"test.png",requestBodyAll);
         }
-        Call<ResponseBody> upLoadAll = wanAndroidLoginApi.upLoadAll(map);
+        Call<ResponseBody> upLoadAll = wanAndroidRegisterApi.upLoadAll(map);
         upLoadAll.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
        // @PartMap values cannot be MultipartBody.Part. Use @Part List<Part> or a different value type instead. (parameter #1),此处报错
-        Call<ResponseBody> upLoadAll1 = wanAndroidLoginApi.upLoadAll1(mapAll, partList);
+        Call<ResponseBody> upLoadAll1 = wanAndroidRegisterApi.upLoadAll1(mapAll, partList);
 
         upLoadAll1.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -285,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
         RequestBody passwordRequestBody = RequestBody.create(mediaType,"123456");
         RequestBody fileRequestBody = RequestBody.create(MediaType.parse("image/png"), file2);
         MultipartBody.Part fileAndtextPart = MultipartBody.Part.createFormData("file", file2.getName(), fileRequestBody);
-        Call<ResponseBody> upLoadTextAndFile = wanAndroidLoginApi.upLoadTextAndFile(nameRequestBody, passwordRequestBody, fileAndtextPart);
+        Call<ResponseBody> upLoadTextAndFile = wanAndroidRegisterApi.upLoadTextAndFile(nameRequestBody, passwordRequestBody, fileAndtextPart);
         upLoadTextAndFile.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {

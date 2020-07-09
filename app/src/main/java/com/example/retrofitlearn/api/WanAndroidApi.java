@@ -49,7 +49,6 @@ public interface  WanAndroidApi{
         Call<WXListBean> getProjectForK(@Path("id") String id, @Path("page") String page,@Query("k") String k);
 
         //登录
-        @Headers("Cookie:XXX")
         @POST("user/login")
         Call<ResponseBody> CreateUser(@Body UserBean user);
 

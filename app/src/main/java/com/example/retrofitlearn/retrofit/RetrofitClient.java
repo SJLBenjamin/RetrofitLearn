@@ -3,9 +3,13 @@ package com.example.retrofitlearn.retrofit;
 
 
 
+import android.util.Log;
+
 import com.example.retrofitlearn.api.WanAndroidApi;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
@@ -38,28 +42,41 @@ public class RetrofitClient {
                 .addConverterFactory(GsonConverterFactory.create())//将数据转换为Bean类的工具
                 .build().create(WanAndroidApi.class);
     };
-
+    String TAG = "MainActivity";
+  static   Map<HttpUrl,List<Cookie>> httpUrlCookieMap = new HashMap<HttpUrl,List<Cookie>>();
     /*
     * 登录  用cookie,现在有问题,待解决
     * */
     public WanAndroidApi createWanAndroidLoginApi(){
 
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        OkHttpClient okHttpClient = new OkHttpClient();
+
         CookieJar cookieJar = new CookieJar() {
             @Override
             public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-
+                Log.d(TAG,"cookies响应信息来了=="+url);
+                if(httpUrlCookieMap.containsKey(url)){
+                   httpUrlCookieMap.remove(url);
+                   httpUrlCookieMap.put(url,cookies);
+                    Log.d(TAG,"1响应对应的url=="+url+"  cookies长度=="+cookies.size());
+                }else {
+                    httpUrlCookieMap.put(url,cookies);
+                    Log.d(TAG,"2响应对应的url=="+url+"  cookies长度=="+cookies.size());
+                }
             }
 
             @Override
             public List<Cookie> loadForRequest(HttpUrl url) {
-                return null;
+                Log.d(TAG,"cookies请求对应的url=="+url);
+                List<Cookie> cookies = httpUrlCookieMap.get(url);
+                 return cookies;
             }
         };
-        builder.cookieJar();
+        okHttpClient.newBuilder().cookieJar(cookieJar);
+
         return new Retrofit.Builder().baseUrl(WanAndroidLoginApiURL)
                 .addConverterFactory(GsonConverterFactory.create())//将数据转换为Bean类的工具
-                .build().create(WanAndroidApi.class);
+              .client(okHttpClient).build().create(WanAndroidApi.class);
     };
 
     /*
@@ -68,7 +85,7 @@ public class RetrofitClient {
     public WanAndroidApi createWanAndroidRegisterApi(){
         return new Retrofit.Builder().baseUrl(WanAndroidRegisterApiURL)
                 .addConverterFactory(GsonConverterFactory.create())//将数据转换为Bean类的工具
-                .build().create(WanAndroidApi.class);
+               .build().create(WanAndroidApi.class);
     };
 
     //上传图片
